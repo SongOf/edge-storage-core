@@ -1,4 +1,4 @@
-module songof.com/edge-storage-core
+module github.com/SongOf/edge-storage-core
 
 go 1.14
 
