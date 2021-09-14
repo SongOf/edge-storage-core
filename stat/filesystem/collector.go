@@ -2,7 +2,7 @@ package filesystem
 
 //collect metrics of local file system usage
 import (
-	"songof.com/edge-storage-core/pkg/eslog"
+	"github.com/SongOf/edge-storage-core/pkg/eslog"
 	"time"
 
 	"github.com/shirou/gopsutil/disk"

@@ -2,11 +2,11 @@ package eslog
 
 import (
 	"context"
+	"github.com/SongOf/edge-storage-core/core"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
-	"songof.com/edge-storage-core/core"
 )
 
 var esLogger EsLogger

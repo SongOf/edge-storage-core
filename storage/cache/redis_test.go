@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"songof.com/edge-storage-core/test"
+	"github.com/SongOf/edge-storage-core/test"
 	"testing"
 	"time"
 )

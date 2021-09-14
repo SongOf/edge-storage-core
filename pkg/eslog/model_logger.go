@@ -2,9 +2,9 @@ package eslog
 
 import (
 	"context"
+	"github.com/SongOf/edge-storage-core/core"
 	"go.uber.org/zap"
 	"gorm.io/gorm/logger"
-	"songof.com/edge-storage-core/core"
 	"time"
 )
 
