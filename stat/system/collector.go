@@ -2,6 +2,7 @@ package system
 
 //collect metrics of machines
 import (
+	"github.com/SongOf/edge-storage-core/pkg/eslog"
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
@@ -83,25 +84,34 @@ func (c *Collector) collectStats() SystemStats {
 		BandwidthStat: make(map[string]BandwidthStat),
 	}
 
-	cpuStat := c.cpuStat
-
-	//cpu * 100
+	pcores, err := cpu.Counts(false)
+	if err != nil {
+		stats.CPUStat.PCores = 0
+		eslog.Err(err)
+	} else {
+		stats.CPUStat.PCores = pcores
+	}
+	lcores, err := cpu.Counts(true)
+	if err != nil {
+		stats.CPUStat.LCores = 0
+		eslog.Err(err)
+	} else {
+		stats.CPUStat.LCores = lcores
+	}
 	cpustats, err := cpu.Times(false)
 	if err == nil && len(cpustats) > 0 {
-		cpustat2 := cpustats[0]
-		if cpuStat == nil {
-			cpuStat = &cpustat2
-		}
-		total1 := cpuStat.Total()
-		total2 := cpustat2.Total()
-		total := total2 - total1
-		if total > 0 {
-			stats.CPUStat.User = (cpustat2.User - cpuStat.User) * 100 / total
-			stats.CPUStat.System = (cpustat2.System - cpuStat.System) * 100 / total
-			stats.CPUStat.Iowait = (cpustat2.Iowait - cpuStat.Iowait) * 100 / total
-			stats.CPUStat.Idle = (cpustat2.Idle - cpuStat.Idle) * 100 / total
-		}
-		c.cpuStat = &cpustat2
+		cpustat := cpustats[0]
+		stats.CPUStat.User = cpustat.User
+		stats.CPUStat.System = cpustat.System
+		stats.CPUStat.Iowait = cpustat.Iowait
+		stats.CPUStat.Idle = cpustat.Idle
+	}
+	usages, err := cpu.Percent(time.Second*c.CollectInterval, false)
+	if err != nil {
+		eslog.Err(err)
+		stats.CPUStat.Usaged = 0
+	} else {
+		stats.CPUStat.Usaged = usages[0]
 	}
 
 	//load * 100
@@ -165,10 +175,13 @@ func (c *Collector) collectStats() SystemStats {
 
 type SystemStats struct {
 	CPUStat struct {
+		PCores int
+		LCores int
 		User   float64
 		System float64
 		Idle   float64
 		Iowait float64
+		Usaged float64
 	}
 	LoadStat struct {
 		Load1  float64
